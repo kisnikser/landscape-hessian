@@ -1,9 +1,9 @@
 <div align="center">
 <h1>Unraveling the Hessian: A Key to Smooth Convergence in Loss Function Landscapes</h1>
 
-[Nikita Kiselev](https://github.com/kisnikser)<sup>1 :email:</sup>, [Andrey Grabovoy](https://github.com/andriygav)<sup>1</sup>
+[Nikita Kiselev](https://github.com/kisnikser)<sup>1, 2 :email:</sup>, [Andrey Grabovoy](https://github.com/andriygav)<sup>1</sup>
 
-<sup>1</sup> Moscow Institute of Physics and Technology
+<sup>1</sup> Moscow Institute of Physics and Technology, <sup>2</sup> Sber AI
 
 <sup>:email:</sup> Corresponding author
 
