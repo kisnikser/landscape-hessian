@@ -2,7 +2,7 @@
 \input{new_commands}
 
 % if you need to pass options to natbib, use, e.g.:
-\PassOptionsToPackage{numbers, compress}{natbib}
+\PassOptionsToPackage{numbers, sort, compress}{natbib}
 % before loading neurips_2024
 
 
@@ -80,7 +80,7 @@
 
 \author{%
   Nikita Kiselev\\
-  MIPT\\
+  MIPT, Sber AI\\
   Moscow, Russia\\
   \texttt{kiselev.ns@phystech.edu}\\
   \And
@@ -97,7 +97,7 @@
 \maketitle
 
 \begin{abstract}
-    The loss landscape of neural networks is a critical aspect of their behavior, and understanding its properties is essential for improving their performance. In this paper, we investigate how the loss surface changes when the sample size increases, a previously unexplored issue. We theoretically analyze the convergence of the loss landscape in a fully connected neural network and derive upper bounds for the difference in loss function values when adding a new object to the sample. Our empirical study confirms these results on various datasets, demonstrating the convergence of the loss function surface for image classification tasks. Our findings provide insights into the local geometry of neural loss landscapes and have implications for the development of sample size determination techniques.
+    The loss landscape of neural networks is a critical aspect of their training, and understanding its properties is essential for improving their performance. In this paper, we investigate how the loss surface changes when the sample size increases, a previously unexplored issue. We theoretically analyze the convergence of the loss landscape in a fully connected neural network and derive upper bounds for the difference in loss function values when adding a new object to the sample. Our empirical study confirms these results on various datasets, demonstrating the convergence of the loss function surface for image classification tasks. Our findings provide insights into the local geometry of neural loss landscapes and have implications for the development of sample size determination techniques.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
@@ -130,20 +130,17 @@ We obtain theoretical estimates for the convergence of this difference in a full
 
 \section{Related Work}\label{sec:rw}
 
-\textbf{Hessian-Based Generalization and Optimization.}
-The Hessian matrix is crucial for studying generalization and optimization in neural networks. In \cite{ju2023robustfinetuningdeepneural} a Hessian-based distance for fine-tuning against label noise was introduced, which can match the scale of the observed generalization gap of fine-tuned models in practice. \cite{nguyen2024agnosticsharpnessawareminimization} optimizes for wider local minima using training data, while concurrently maintaining low loss values on validation data to improve generalization. Authors of \cite{macdonald2023progressivesharpeningflatminima} ties loss curvature to input-output behavior, explaining progressive sharpening and flat minima. All these studies provide insights into optimizing and generalizing neural networks using Hessian-based methods. However, none of these papers address the impact of changing sample size. 
-
 \textbf{Understanding the Geometry of Neural Network Loss Landscapes.}
-The geometry of neural network loss landscapes, particularly through the Hessian matrix, has been extensively studied. \cite{fort2019emergentpropertieslocalgeometry} identifies key properties including that in the multi-label classificaion problem the landscape exhibits exactly $K$ directions of high positive curvature, where $K$ is the number of classes. \cite{sagun2017eigenvalueshessiandeeplearning} and \cite{sagun2018empiricalanalysishessianoverparametrized} analyze the Hessian's eigenvalue distribution, highlighting over-parametrization and data dependency. \cite{pmlr-v70-pennington17a} and \cite{pmlr-v97-ghorbani19b} use random matrix theory and spectral analysis to understand the loss surface dynamics and optimization. However, nowhere is the question raised that this geometry becomes unchanged with an increase in the number of objects.
+The geometry of neural network loss landscapes, particularly through the Hessian matrix, has been extensively studied. \cite{fort2019emergentpropertieslocalgeometry} identifies key properties including that in the multi-label classificaion problem the landscape exhibits exactly $K$ directions of high positive curvature, where $K$ is the number of classes. \cite{pmlr-v70-pennington17a} and \cite{pmlr-v97-ghorbani19b} use random matrix theory and spectral analysis to understand the loss surface dynamics and optimization. \cite{singh2024landscapinglinearmodeconnectivity} introduces a model for understanding linear mode connectivity (LMC) by analyzing the topography of the loss landscape. \cite{singh2022phenomenologydoubledescentfinitewidth} provides a theoretical understanding of the double descent phenomenon in finite-width neural networks, leveraging influence functions to derive expressions for the population loss. \cite{wang2023instabilitieslargelearningrate} characterizes the instabilities of gradient descent during training with large learning rates, observing landscape flattening and shift. However, nowhere is the question raised that this geometry becomes unchanged with an increase in the number of objects.
+
+\textbf{Hessian-Based Generalization and Optimization.}
+The Hessian matrix is crucial for studying generalization and optimization in neural networks. In \cite{ju2023robustfinetuningdeepneural} a Hessian-based distance for fine-tuning against label noise was introduced, which can match the scale of the observed generalization gap of fine-tuned models in practice. \cite{nguyen2024agnosticsharpnessawareminimization} optimizes for wider local minima using training data, while concurrently maintaining low loss values on validation data to improve generalization. Authors of \cite{macdonald2023progressivesharpeningflatminima} ties loss curvature to input-output behavior, explaining progressive sharpening and flat minima. All these studies provide insights into optimizing and generalizing neural networks using Hessian-based methods. However, none of these papers address the impact of changing sample size.
+
+\textbf{Spectral Analysis and Structural Insights.}
+Spectral analysis of the Hessian matrix offers insights into neural network structure and properties. There is a variety of works \cite{sagun2018empiricalanalysishessianoverparametrized,pmlr-v97-ghorbani19b,papyan2019spectrumdeepnethessiansscale} underlying that the Hessian matrix of typical loss surface exhibits a spectrum composed of two parts: a bulk centered near zero and outliers away from the bulk. \cite{liao2021hessianeigenspectrarealisticnonlinear} shows that depending on the data properties, the nonlinear response model, and the loss function, the Hessian can have qualitatively different spectral behaviors. \cite{dauphin2024neglectedhessiancomponentexplains} highlights the Hessian's role in sharpness regularization. \cite{papyan2020tracesclasscrossclassstructurepervade} reveals class/cross-class structure in Hessian spectra. \cite{papyan2019spectrumdeepnethessiansscale} and \cite{papyan2019measurementsthreelevelhierarchicalstructure} analyze Hessian dynamics and hierarchical structure. \cite{garrod2024unifyinglowdimensionalobservations} unifies low-dimensional observations, explaining Hessian spectra and gradient descent alignment. \cite{sagun2017eigenvalueshessiandeeplearning} and \cite{sagun2018empiricalanalysishessianoverparametrized} analyze the Hessian's eigenvalue distribution, highlighting over-parametrization and data dependency. \cite{xie2022powerlawhessianspectrumsdeep} discovers and mathematically models the power-law Hessian spectrum, providing a maximum entropy interpretation and a framework for spectral analysis in deep learning. However, these low-rank approximations have not been sufficiently investigated in terms of the convergence of the corresponding spectra.
 
 \textbf{Decomposing and Analyzing the Hessian Matrix.}
 Decomposing the Hessian matrix provides insights into neural network training and generalization. \cite{wu2022dissectinghessianunderstandingcommon} proposes a decoupling conjecture to analyze Hessian properties, decomposing it as the Kronecker product of two smaller matrices. \cite{singh2023hessianperspectivenatureconvolutional} explores CNN Hessian maps, revealing the Hessian rank grows as the square root of the number of parameters. \cite{singh2021analyticinsightsstructurerank} provides exact formulas and tight upper bounds for the Hessian rank of deep linear networks. \cite{skorski2019chainruleshessianhigher} simplifies high-dimensional derivative calculations using tensor calculus. However, the limit properties of the Hessian with increasing sample size have not been sufficiently investigated. 
-
-\textbf{Spectral Analysis and Structural Insights.}
-Spectral analysis of the Hessian matrix offers insights into neural network structure and properties. There is a variety of works \cite{sagun2018empiricalanalysishessianoverparametrized,pmlr-v97-ghorbani19b,papyan2019spectrumdeepnethessiansscale} underlying that the Hessian matrix of typical loss surface exhibits a spectrum composed of two parts: a bulk centered near zero and outliers away from the bulk. \cite{liao2021hessianeigenspectrarealisticnonlinear} shows that depending on the data properties, the nonlinear response model, and the loss function, the Hessian can have qualitatively different spectral behaviors. \cite{dauphin2024neglectedhessiancomponentexplains} highlights the Hessian's role in sharpness regularization. \cite{papyan2020tracesclasscrossclassstructurepervade} reveals class/cross-class structure in Hessian spectra. \cite{papyan2019spectrumdeepnethessiansscale} and \cite{papyan2019measurementsthreelevelhierarchicalstructure} analyze Hessian dynamics and hierarchical structure. \cite{garrod2024unifyinglowdimensionalobservations} unifies low-dimensional observations, explaining Hessian spectra and gradient descent alignment. However, these low-rank approximations have not been sufficiently investigated in terms of the convergence of the corresponding spectra.
-
-\textbf{Additional Insights into Loss Landscapes.}
-Several studies provide some additional insights into the neural networks loss landscapes. \cite{singh2024landscapinglinearmodeconnectivity} introduces a model for understanding linear mode connectivity (LMC) by analyzing the topography of the loss landscape. \cite{singh2022phenomenologydoubledescentfinitewidth} provides a theoretical understanding of the double descent phenomenon in finite-width neural networks, leveraging influence functions to derive expressions for the population loss. \cite{wang2023instabilitieslargelearningrate} characterizes the instabilities of gradient descent during training with large learning rates, observing landscape flattening and shift. \cite{xie2022powerlawhessianspectrumsdeep} discovers and mathematically models the power-law Hessian spectrum, providing a maximum entropy interpretation and a framework for spectral analysis in deep learning. However, there was not enough interest in all these additional properties when changing the size of the training sample.
 
 \section{Preliminaries}\label{sec:prelim}
 
@@ -158,7 +155,9 @@ the empirical loss function calculated for all the given dataset of size $m$ is
 so it is an approximation of general loss function, which is calculated using the joint distribution $p(\mathbf{x}, \mathbf{y})$. Here we denote the per-object loss function as $\ell(\mathbf{z}, \mathbf{y})$, e.g., cross-entropy loss $\mathrm{CE}(\mathrm{softmax}(\mathbf{z}), \mathbf{y})$ in multi-label classification. If we fix first $k$ samples, corresponding loss function is
 \[ \mathcal{L}_k(\boldsymbol{\theta}) = \dfrac{1}{k} \sum\limits_{i=1}^{k} \ell(f_{\boldsymbol{\theta}}(\mathbf{x}_i), \mathbf{y}_i). \]
 Difference between losses for sample sizes $k+1$ and $k$ is
-\[ \mathcal{L}_{k+1}(\boldsymbol{\theta}) - \mathcal{L}_k(\boldsymbol{\theta}) = \dfrac{1}{k+1} \left( \ell(f_{\boldsymbol{\theta}}(\mathbf{x}_{k+1}), \mathbf{y}_{k+1}) - \mathcal{L}_{k}(\boldsymbol{\theta}) \right). \]
+\begin{equation}\label{eq:difference}
+    \mathcal{L}_{k+1}(\boldsymbol{\theta}) - \mathcal{L}_k(\boldsymbol{\theta}) = \dfrac{1}{k+1} \left( \ell(f_{\boldsymbol{\theta}}(\mathbf{x}_{k+1}), \mathbf{y}_{k+1}) - \mathcal{L}_{k}(\boldsymbol{\theta}) \right).
+\end{equation}
 
 The further investigation in the work is aimed at studying exactly this difference, which occurs when adding another object to the dataset. We are especially interested in limiting properties when the sample size tends to infinity.
 
@@ -170,13 +169,15 @@ This assumption will allow us to investigate the behavior of the loss function l
 
 \subsection{Second-order approximation} 
 
-Let us use second-order Taylor approximation for mentioned above loss functions at $\boldsymbol{\theta}^*$. The first-order term vanishes because the gradients $\nabla \mathcal{L}_{k}(\boldsymbol{\theta}^*)$ and $\nabla \mathcal{L}_{k+1}(\boldsymbol{\theta}^*)$ zeroes:
-\[ \mathcal{L}_{k}(\boldsymbol{\theta}) \approx \mathcal{L}_{k}(\boldsymbol{\theta}^*) + \dfrac{1}{2} (\boldsymbol{\theta} - \boldsymbol{\theta}^*)\T \mathbf{H}^{(k)}(\boldsymbol{\theta}^*) (\boldsymbol{\theta} - \boldsymbol{\theta}^*), \]
+Let us use second-order Taylor approximation for mentioned above loss functions at $\boldsymbol{\theta}^*$. We suppose that decomposition to the second order will be sufficient to study local behavior. The first-order term vanishes because the gradients $\nabla \mathcal{L}_{k}(\boldsymbol{\theta}^*)$ and $\nabla \mathcal{L}_{k+1}(\boldsymbol{\theta}^*)$ zeroes:
+\begin{equation}\label{eq:approx}
+    \mathcal{L}_{k}(\boldsymbol{\theta}) \approx \mathcal{L}_{k}(\boldsymbol{\theta}^*) + \dfrac{1}{2} (\boldsymbol{\theta} - \boldsymbol{\theta}^*)\T \mathbf{H}^{(k)}(\boldsymbol{\theta}^*) (\boldsymbol{\theta} - \boldsymbol{\theta}^*),
+\end{equation}
 where we denoted the Hessian of $\mathcal{L}_{k}(\boldsymbol{\theta})$ w.r.t. parameters $\boldsymbol{\theta}$ at $\boldsymbol{\theta}^*$ as $\mathbf{H}^{(k)}(\boldsymbol{\theta}^*) \in \mathbb{R}^{P \times P}$. Moreover, the total Hessian can be written as the average value of the Hessians of the individual terms of the empirical loss function:
 \[ \mathbf{H}^{(k)}(\boldsymbol{\theta}) = \nabla^2_{\boldsymbol{\theta}} \mathcal{L}_{k}(\boldsymbol{\theta}) = \dfrac{1}{k} \sum\limits_{i=1}^{k} \nabla^2_{\boldsymbol{\theta}} \ell(f_{\boldsymbol{\theta}}(\mathbf{x}_{i}), \mathbf{y}_{i}) = \dfrac{1}{k} \sum\limits_{i=1}^{k} \mathbf{H}_{i}(\boldsymbol{\theta}). \]
-Therefore formula for the difference of losses becomes
+Therefore, using the obtained second-order approximation~\eqref{eq:approx}, formula for the difference of losses~\eqref{eq:difference} becomes
 \[ \mathcal{L}_{k+1}(\boldsymbol{\theta}) - \mathcal{L}_k(\boldsymbol{\theta}) = \dfrac{1}{k+1} \left( \ell(f_{\boldsymbol{\theta}^*}(\mathbf{x}_{k+1}), \mathbf{y}_{k+1}) - \dfrac{1}{k} \sum\limits_{i=1}^{k} \ell(f_{\boldsymbol{\theta}^*}(\mathbf{x}_{i}), \mathbf{y}_{i}) \right) + \]
-\[ + \dfrac{1}{k+1} (\boldsymbol{\theta} - \boldsymbol{\theta}^*)\T \left( \mathbf{H}_{k+1}(\boldsymbol{\theta}^*) - \dfrac{1}{k} \sum\limits_{i=1}^{k} \mathbf{H}_{i}(\boldsymbol{\theta}^*) \right) (\boldsymbol{\theta} - \boldsymbol{\theta}^*) \]
+\[ + \dfrac{1}{k+1} (\boldsymbol{\theta} - \boldsymbol{\theta}^*)\T \left( \mathbf{H}_{k+1}(\boldsymbol{\theta}^*) - \dfrac{1}{k} \sum\limits_{i=1}^{k} \mathbf{H}_{i}(\boldsymbol{\theta}^*) \right) (\boldsymbol{\theta} - \boldsymbol{\theta}^*). \]
 After that, using triangle inequality, we can derive the following:
 \[ \left| \mathcal{L}_{k+1}(\boldsymbol{\theta}) - \mathcal{L}_k(\boldsymbol{\theta}) \right| \leqslant \dfrac{1}{k+1} \left| \ell(f_{\boldsymbol{\theta}^*}(\mathbf{x}_{k+1}), \mathbf{y}_{k+1}) - \dfrac{1}{k} \sum\limits_{i=1}^{k} \ell(f_{\boldsymbol{\theta}^*}(\mathbf{x}_{i}), \mathbf{y}_{i}) \right| + \]
 \[ + \dfrac{1}{k+1} \left\|\boldsymbol{\theta} - \boldsymbol{\theta}^*\right\|_2^2 \left\| \mathbf{H}_{k+1}(\boldsymbol{\theta}^*) - \dfrac{1}{k} \sum\limits_{i=1}^{k} \mathbf{H}_{i}(\boldsymbol{\theta}^*) \right\|_2. \]
@@ -188,9 +189,11 @@ So the problem of the boundedness and convergence of the losses difference is re
     \[ \left\| \mathbf{H}_{k+1}(\boldsymbol{\theta}^*) - \dfrac{1}{k} \sum\limits_{i=1}^{k} \mathbf{H}_{i}(\boldsymbol{\theta}^*) \right\|_2. \]
 \end{itemize}
 
+It should be mentioned that the first term can be easily upper-bounded by a constant, since the loss function itself takes limited values. However, the expression with Hessians is not so easy to evaluate. The rest of the work is devoted to a thorough analysis of this difference. Thus, we analyze the local convergence of the landscape of the loss function using its Hessian.
+
 \subsection{Fully connected neural network} 
 
-The main results of this work are obtained for $K$-label classification problem with a cross-entropy loss function. In this case the input vector is $\mathbf{x} \in \mathbb{R}^{n}$ and the output $\mathbf{y} \in \mathbb{R}^{K}$, which is a one-hot vector, with all components equal to $0$ except a single component $y_k$ if and only if $k$ is the correct class label for input $\mathbf{x}$. Consider a $L$-layer fully connected network $f_{\boldsymbol{\theta}}(\cdot)$ with ReLU activation function after each linear layer. With $\sigma(\mathbf{x}) = \left[ \mathbf{x} \geqslant 0 \right] \mathbf{x}$ as the Rectified Linear Unit (ReLU) function, the output of this network is a vector of logits $\mathbf{z} \in \mathbb{R}^{K}$. They are computed recursively as
+The main results of this work are obtained for $K$-label classification problem with a cross-entropy loss function. In this case the input vector is $\mathbf{x} \in \mathbb{R}^{n}$ and the output $\mathbf{y} \in \mathbb{R}^{K}$, which is a one-hot vector, with all components equal to $0$ except a single component $y_k$ if and only if $k$ is the correct class label for input $\mathbf{x}$. Consider a $L$-layer fully connected network $f_{\boldsymbol{\theta}}(\cdot)$ with ReLU activation function after each linear layer. With $\sigma(\mathbf{x}) = \left[ \mathbf{x} \geqslant \mathbf{0} \right] \mathbf{x}$ as the Rectified Linear Unit (ReLU) function, the output of this network is a vector of logits $\mathbf{z} \in \mathbb{R}^{K}$. They are computed recursively as
 \begin{align*}\label{align:fc}
     &\mathbf{z}^{(p)} = \mathbf{W}^{(p)} \mathbf{x}^{(p)} + \mathbf{b}^{(p)}, \\
     &\mathbf{x}^{(p+1)} = \sigma(\mathbf{z}^{(p)}).
@@ -215,10 +218,10 @@ Moreover, recent works exploring the Neural Tangent Kernel \cite{NEURIPS2018_5a4
 
 In this section, we present the results obtained regarding the bounding the Hessian norm. After that, we apply the obtained upper bound on the Hessian to get a rate of the losses difference convergence. Despite the fact that this is only an upper bound and it is not always achieved, in the Section~\ref{sec:exp} we analyze the general trends for practical application. 
 
-Authors of \cite{wu2022dissecting} derived the formula of G-term in the fully connected neural network, so in our case we use the following approximation: $\mathbf{H}_{i}(\boldsymbol{\theta}) = \mathbf{F}_i\T \mathbf{A}_i \mathbf{F}_i$. Here the following is denoted (we omit the index $i$ for simplicity):
+Authors of \cite{wu2022dissecting} derived the formula of G-term in the fully connected neural network, so in our case we use the following approximation: $\mathbf{H}_{i}(\boldsymbol{\theta}) \approx \mathbf{F}_i\T \mathbf{A}_i \mathbf{F}_i$. Here the following is denoted (we omit the index $i$ for simplicity):
 \begin{itemize}
     \item Matrix representation of the ReLU activation function:
-    \[ \mathbf{D}^{(p)} = \mathrm{diag}([\mathbf{z}^{(p)} \geqslant 0]), \]
+    \[ \mathbf{D}^{(p)} = \mathrm{diag}([\mathbf{z}^{(p)} \geqslant \mathbf{0}]), \]
     \item The partial derivative of logits w.r.t. logits at $p$-th layer:
     \[ \mathbf{G}^{(p)} = \dfrac{\partial \mathbf{z}}{\partial \mathbf{z}^{(p)}} = \mathbf{W}^{(L)} \mathbf{D}^{(L-1)} \mathbf{W}^{(L-1)} \mathbf{D}^{(L-2)} \cdot \ldots \cdot \mathbf{D}^{(p)}, \]
     \item Its stacked version:
@@ -237,39 +240,38 @@ To the best of our knowledge, no one had received an estimate for the norms of s
 
 \subsection{Boundedness of the Hessian}
 
-Below there is a Theorem~\ref{thm:hess}, a detailed proof of which is provided in Appendix~\ref{app:thm:hess}
+Below there is a Theorem~\ref{thm:hess}, a detailed proof of which is provided in Appendix~\ref{app:thm:hess}. 
 
 \begin{theorem}\label{thm:hess}
     Consider a $L$-layer fully connected neural network with ReLU activation function and without bias terms, applied to solve a $K$-label classification problem. Suppose the following is satisfied: $\| \mathbf{W}^{(p)} \|_2 \leqslant M_{\mathbf{W}}$ and $\| \mathbf{x}_i \|_2 \leqslant M_{\mathbf{x}}$ for all layers $p = 1, \ldots, L$ in network and for all objects $i = 1, \ldots, m$ in the dataset. Then, for any object $i = 1, \ldots, m$ the following inequality holds:
     \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \leqslant L \sqrt{2} M_{\mathbf{x}}^2 M_{\mathbf{W}}^{2L} + \sqrt{2} \dfrac{M_{\mathbf{W}}^2 (M_{\mathbf{W}}^{2L} - 1)}{M_{\mathbf{W}}^2 - 1}. \]
 \end{theorem}
 
-This theorem allows us to understand the dependence of the Hessian norm on the structure of the neural network: the size of the hidden layer and the number of layers. 
+This theorem allows us to understand the dependence of the Hessian norm on the structure of the neural network: the size of the hidden layer and the number of layers. So, the next Lemma~\ref{lemma:hess} exhibits the dependence on the hidden size.
 
-\[ \| \mathbf{W}^{(p)} \|_2^2 \leqslant \| \mathbf{W}^{(p)} \|_F^2 = \sum_{i, j = 1}^{h} \left(w_{ij}^{(p)}\right)^2 \leqslant h^2 M^2, \]
-where $M$ is such a constant, that $\left(w_{ij}^{(p)}\right)^2 \leqslant  M^2$ for all $i, j = 1, \ldots, h$ and for all $p = 1, \ldots, L$.
+\begin{lemma}\label{lemma:hess}
+    If each model parameter is bounded by a constant $M > 0$, that is $|w_{ij}^{(p)}| \leqslant M$ for all $i, j = 1, \ldots, h$ and for all layers $p = 1, \ldots, L$, then, under the conditions of Theorem~\ref{thm:hess}, the following is true:
+    \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \leqslant L \sqrt{2} M_{\mathbf{x}}^2 (hM)^{2L} + \sqrt{2} \dfrac{(hM)^2 ((hM)^{2L} - 1)}{(hM)^2 - 1}. \]
+    So, the following proportionality holds:
+    \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \propto L (hM)^{2L}. \]
+\end{lemma}
 
-\[ h^2 M^2 \leqslant M_{\mathbf{W}}^2, \]
-therefore
-\[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \leqslant L \sqrt{2} M_{\mathbf{x}}^2 (hM)^{2L} + \sqrt{2} \dfrac{(hM)^2 ((hM)^{2L} - 1)}{(hM)^2 - 1}. \]
-So, the following proportionality is true:
-\[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \propto L h^{2L}. \]
+Obtained results allows us to claim that the Hessian norm is a power function of the size of the hidden layer $h$ and an exponential function of the number of layers $L$. Although it may seem that the estimate received is too high, this is actually not the case. The fact is that if we choose $h$ to be large, then the limiting constant $M$ will most likely be very small. Because of this, the number under the power of $2L$ will probably be less than one. Further, we use this upper bound to get an inequality for the loss function difference.
 
-A separate interesting case is when $L = 1$, then
-\[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \leqslant \sqrt{2} M_{\mathbf{W}}^{2} \left( M_{\mathbf{x}}^2 + 1 \right), \]
-that is
-\[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \propto h^2. \]
-
-Obtained results allows us to claim that the Hessian norm is a power function of the size of the hidden layer $h$ and an exponential function of the number of layers $L$. Further, we use this upper bound to get an inequality for the loss function difference.
-
-\subsection{Losses difference convergence}
+\subsection{Losses difference convergence}\label{subseq:rate}
 
 Below there is a Lemma~\ref{lemma:loss}, a detailed proof of which is provided in Appendix~\ref{app:lemma:loss}
 
 \begin{lemma}\label{lemma:loss}
-    Let $\boldsymbol{\theta}$ be chosen as $\left\|\boldsymbol{\theta} - \boldsymbol{\theta}^*\right\|_2^2 \leqslant R^2$ for some $R > 0$. If there exist a non-negative constant $M_{\ell}$ such $\left| \ell(f_{\boldsymbol{\theta}^*}(\mathbf{x}_{i}), \mathbf{y}_{i}) \right| \leqslant M_{\ell}$ for all objects $i = 1, \ldots, m$ in the dataset, then, under the conditions of the previous theorem, the following holds:
-    \[ \left| \mathcal{L}_{k+1}(\boldsymbol{\theta}) - \mathcal{L}_k(\boldsymbol{\theta}) \right| \leqslant \dfrac{2}{k+1}\left( M_{\ell} + L \sqrt{2} M_{\mathbf{x}}^2 M_{\mathbf{W}}^{2L} + \sqrt{2} \dfrac{M_{\mathbf{W}}^2 (M_{\mathbf{W}}^{2L} - 1)}{M_{\mathbf{W}}^2 - 1} R^2 \right) \to 0 \text{ as } k \to \infty. \]
+    Let $\boldsymbol{\theta}$ be chosen as $\left\|\boldsymbol{\theta} - \boldsymbol{\theta}^*\right\|_2^2 \leqslant R^2$ for some $R > 0$. If there exist a non-negative constant $M_{\ell}$ such $\left| \ell(f_{\boldsymbol{\theta}^*}(\mathbf{x}_{i}), \mathbf{y}_{i}) \right| \leqslant M_{\ell}$ for all objects $i = 1, \ldots, m$ in the dataset, then, under the conditions of Theorem~\ref{thm:hess}, the following holds:
+    \[ \left| \mathcal{L}_{k+1}(\boldsymbol{\theta}) - \mathcal{L}_k(\boldsymbol{\theta}) \right| \leqslant \dfrac{2}{k+1}\left( M_{\ell} + \left( L \sqrt{2} M_{\mathbf{x}}^2 M_{\mathbf{W}}^{2L} + \sqrt{2} \dfrac{M_{\mathbf{W}}^2 (M_{\mathbf{W}}^{2L} - 1)}{M_{\mathbf{W}}^2 - 1} \right) R^2 \right) \to 0 \text{ as } k \to \infty. \]
+    So, the following proportionality is true:
+    \begin{equation}\label{eq:rate}
+        \left| \mathcal{L}_{k+1}(\boldsymbol{\theta}) - \mathcal{L}_k(\boldsymbol{\theta}) \right| \propto \dfrac{L (hM)^{2L} R^2}{k}. 
+    \end{equation}
 \end{lemma}
+
+Based on the estimates obtained, the following conclusions can be drawn. Firstly, the convergence of the loss function surface is affected by the distance from the extremum point. The farther we are from this point, the slower the convergence may be. Secondly, the situation regarding the number of layers and layer size is similar to that of the Hessian matrix. An increase in the number of layers $L$ will lead to a higher convergence score, while an increase in layer size $h$ does not necessarily have a negative impact. Again, this is due to the constant that evaluates the magnitude of each element in the weight matrix. Finally, the resulting estimate is inversely proportional to the sample size, exhibiting a sublinear rate of convergence. In the next section, we demonstrate the typical behavior of the loss function surface in practice and compare it with the theoretical one obtained.
 
 \section{Experiments}\label{sec:exp}
 
@@ -291,11 +293,13 @@ In this experiment, we utilized the pixel values of images as inputs. Figure~\re
     \label{fig:mnist}
 \end{figure}
 
-From the dependencies observed, it is evident that although the change is not substantial, increasing the hidden size results in a smaller difference between the loss functions (see the \textbf{left} side). Conversely, adding more layers leads to a greater difference in the loss functions (see the \textbf{right} side).
+From the dependencies observed, it is evident that although the change is not substantial, adding more layers leads to a greater difference in the loss functions (see the \textbf{right} side). Conversely, increasing the hidden size results in a smaller difference between the loss functions (see the \textbf{left} side). 
+
+For readers unfamiliar with the topic, this may be surprising, as the estimation we have made \eqref{eq:rate} suggests a power dependence on the layer size $h$, and the value of $L$ is clearly not less than 1. However, readers are referred to Section~\ref{subseq:rate} for a more detailed discussion of this phenomenon. Additionally, in practice, the constant $M$ that limits the magnitude of weights is found to be relatively small. Furthermore, since the MNIST dataset classification task is considered relatively straightforward, a shallow yet wide neural network can produce good classification results. Consequently, the values of the loss function have been observed to be lower for larger $h$ values, and therefore their difference is also lower.
 
 \subsection{Image features extraction} 
 
-In contrast to the previous experiment, this part employs a pre-trained image feature extractor. The fully connected network is utilized as a multi-label classification head. We selected the Vision Transformer (ViT) \cite{wu2020visual} from Google, using the following HuggingFace checkpoint: \href{https://huggingface.co/google/vit-base-patch16-224}{google/vit-base-patch16-224}.
+In contrast to the previous experiment, this part employs a pre-trained image feature extractor. The fully connected network is utilized as a multi-label classification head. We selected the Vision Transformer (ViT) \cite{wu2020visual} from Google.
 
 \begin{figure}[ht]
     \centering
@@ -315,13 +319,13 @@ The results of this study provide insights into the loss landscape convergence a
 
 The results of our research are highly connected to the problem of the local geometry of neural loss landscapes. Despite the fact that a large number of studies have been devoted to this issue, the change in dataset size has remained a significant gap. In this paper, we have tried to take the first steps in this direction. 
 
-Nevertheless, this study has potential limitations. First, our theoretical analysis was deterministic and not probabilistic. Although this may bring certain clarifications to the estimates, we do not think it can have a serious impact in practice. Second, the subject of our research is a fully connected neural network. We plan to extend our results to other architectures in future work. Third, using Assumption~\ref{assumpt}, we suppose existing such a point, which will be a minimum for any sample size.  Finally, using the triangle inequality in the proof of Lemma~\ref{lemma:loss} yields a rough upper bound for the loss difference, so it may be improved in future work. 
+Nevertheless, this study has potential limitations. First, our theoretical analysis was deterministic and not probabilistic. Although this may bring certain clarifications to the estimates, we do not think it can have a serious impact in practice. Second, the subject of our research is a fully connected neural network. We plan to extend our results to other architectures in future work. Third, using Assumption~\ref{assumpt}, we suppose existing such a point, which will be a minimum, starting with a certain sample size. Finally, using the triangle inequality in the proof of Lemma~\ref{lemma:loss} yields a rough upper bound for the loss difference, so it may be improved in future work. 
 
 We believe that our findings will contribute to the development of more precise studies of the behavior of the loss landscape when changing the training sample size. We also believe that our results can be used to develop modern sample-size determination techniques. We expect this because the convergence of the loss function landscape can be considered as the sign that the training sample size is sufficient for the selected model. In future work, we hope to apply our observations to this field.
 
 \section{Conclusion}\label{sec:concl}
 
-In this paper, we have presented a comprehensive study of the convergence of the loss landscape in a fully connected neural network as the sample size increases. Our theoretical analysis and empirical results demonstrate that the absolute difference between the average loss function values when adding one more object to the sample tends to zero as the number of available objects tends to infinity. These findings provide valuable insights into the local geometry of neural loss landscapes and address a previously unexplored issue in the field. We believe that our results will contribute to the development of more precise studies of the behavior of the loss landscape and have implications for the development of sample size determination techniques. Future work will focus on extending our results to other architectures and improving the upper bounds for the loss difference.
+In this paper, we have presented a comprehensive study of the convergence of the loss landscape in a fully connected neural network as the sample size increases. Our theoretical analysis and empirical results demonstrate that the absolute difference between the average loss function values when adding one more object to the sample tends to zero as the number of available objects tends to infinity. These findings provide valuable insights into the local geometry of neural loss landscapes and address a previously unexplored issue in the field. We believe that our results will contribute to the development of more precise studies of the loss landscape behavior and have implications for the development of sample size determination techniques. Future work will focus on extending our results to other architectures and improving the upper bounds for the loss difference.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -470,6 +474,23 @@ Similarly to Section~\ref{sec:exp}, the results confirm the convergence proved i
         \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \leqslant L \sqrt{2} M_{\mathbf{x}}^2 M_{\mathbf{W}}^{2L} + \sqrt{2} \dfrac{M_{\mathbf{W}}^2 (M_{\mathbf{W}}^{2L} - 1)}{M_{\mathbf{W}}^2 - 1}. \]
     A separate interesting case is when $L = 1$, then
     \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \leqslant \sqrt{2} M_{\mathbf{W}}^{2} \left( M_{\mathbf{x}}^2 + 1 \right) . \]
+\end{proof}
+
+\subsection{Proof of Lemma~\ref{lemma:hess}}\label{app:lemma:hess}
+\begin{proof}
+    The relationship between the spectral norm and the Frobenius norm, as well as the definition of the Frobenius norm, allow us to obtain
+    \[ \| \mathbf{W}^{(p)} \|_2^2 \leqslant \| \mathbf{W}^{(p)} \|_F^2 = \sum_{i, j = 1}^{h} \left(w_{ij}^{(p)}\right)^2 \leqslant h^2 M^2, \]
+    where $M$ is such a constant, that $\left(w_{ij}^{(p)}\right)^2 \leqslant  M^2$ for all $i, j = 1, \ldots, h$ and for all $p = 1, \ldots, L$.
+    \[ h^2 M^2 \leqslant M_{\mathbf{W}}^2, \]
+    therefore
+    \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \leqslant L \sqrt{2} M_{\mathbf{x}}^2 (hM)^{2L} + \sqrt{2} \dfrac{(hM)^2 ((hM)^{2L} - 1)}{(hM)^2 - 1}. \]
+    So, the following proportionality is true:
+    \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \propto L h^{2L}. \]
+    
+    A separate interesting case is when $L = 1$, then
+    \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \leqslant \sqrt{2} M_{\mathbf{W}}^{2} \left( M_{\mathbf{x}}^2 + 1 \right), \]
+    that is
+    \[ \left\| \mathbf{H}_i(\boldsymbol{\theta}) \right\|_2 \propto h^2. \]
 \end{proof}
 
 \subsection{Proof of Lemma~\ref{lemma:loss}}\label{app:lemma:loss}
