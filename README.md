@@ -53,3 +53,13 @@ landscape-hessian
     ├── new_commands.tex
     └── references.bib
 ```
+
+## 📚 Citation
+```BibTeX
+@article{kiselev2024unraveling,
+  title={Unraveling the Hessian: A Key to Smooth Convergence in Loss Function Landscapes},
+  author={Kiselev, Nikita and Grabovoy, Andrey},
+  journal={arXiv preprint arXiv:2409.11995},
+  year={2024}
+}
+```
