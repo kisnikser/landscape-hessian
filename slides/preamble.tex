@@ -1,0 +1,108 @@
+% packages
+\usepackage{multicol}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{booktabs}
+\usepackage{biblatex}
+\usepackage{graphicx}
+\usepackage{href-ul}
+\usepackage{cmap}
+\usepackage{svg}
+
+\usepackage{lipsum}
+
+% math packages
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools}
+\usepackage{mathtext}
+\usepackage{icomma}
+\usepackage{floatflt}
+
+% settings
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{section in toc}[sections numbered]
+\setlength{\columnseprule}{0.2pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Metropolis Theme Configuration %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usetheme[
+    %%% main theme %%%
+    titleformat=regular, 
+    %%% inner theme %%%
+    sectionpage=progressbar, % + slide
+    %sectionpage=none, % disables section page
+    %%% outer theme %%%
+    numbering=fraction,
+    progressbar=frametitle,
+    %%% color theme %%%
+    block=transparent,
+    background=light
+]{metropolis}
+
+%%%%%%%%%%%%% Title %%%%%%%%%%%%%%
+
+\setbeamertemplate{title page}{
+  \begin{minipage}[b][\paperheight]{\textwidth}
+    \centering  % <-- Center here
+    \ifx\inserttitlegraphic\@empty\else\usebeamertemplate*{title graphic}\fi
+    \vfill%
+    \ifx\inserttitle\@empty\else\usebeamertemplate*{title}\fi
+    \ifx\insertsubtitle\@empty\else\usebeamertemplate*{subtitle}\fi
+    \usebeamertemplate*{title separator}
+    \ifx\beamer@shortauthor\@empty\else\usebeamertemplate*{author}\fi
+    \ifx\insertdate\@empty\else\usebeamertemplate*{date}\fi
+    \ifx\insertinstitute\@empty\else\usebeamertemplate*{institute}\fi
+    \vfill
+    \vspace*{1mm}
+  \end{minipage}
+}
+
+\setbeamertemplate{title}{
+%  \raggedright%  % <-- Comment here
+  \linespread{1.0}%
+  \inserttitle%
+  \par%
+  \vspace*{0.5em}
+}
+\setbeamertemplate{subtitle}{
+%  \raggedright%  % <-- Comment here
+  \insertsubtitle%
+  \par%
+  \vspace*{0.5em}
+}
+
+%%%%%%%%%%%%% Blocks %%%%%%%%%%%%%
+
+% map defaulf block to oldblock
+\let\oldblock\block
+\let\endoldblock\endblock
+
+% change block by adding smallskip
+\renewenvironment{block}[1]
+{\begin{oldblock}{#1}
+    \smallskip
+}
+{ 
+\end{oldblock}
+}
+
+\setbeamerfont{bibliography entry title}{size=}
+\setbeamerfont{bibliography entry author}{size=}
+\setbeamerfont{bibliography entry location}{size=}
+\setbeamerfont{bibliography entry note}{size=}
+
+%%%%%%%%%%%%% Colors %%%%%%%%%%%%%
+
+\setbeamercolor{normal text}{fg=black, bg=white}
+\setbeamercolor{progress bar}{fg=normal text.fg, bg=normal text.fg!50!black!30} 
+\setbeamercolor{frametitle}{fg=normal text.fg, bg=normal text.bg}
+
+% \definecolor{myblue}{RGB}{52,52,178}
+% \setbeamercolor{normal text}{fg=black, bg=white}
+% \setbeamercolor{progress bar}{fg=normal text.fg, bg=normal text.fg!50!black!30} 
+% \setbeamercolor{frametitle}{fg=myblue, bg=normal text.bg}
+% \setbeamercolor{palette primary}{bg=myblue}
+% \setbeamercolor{block title}{fg=myblue}
+% \setbeamercolor{titlelike}{fg=myblue}
