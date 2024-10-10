@@ -7,7 +7,7 @@
 
 <sup>:email:</sup> Corresponding author
 
-[📝 Paper](https://github.com/kisnikser/landscape-hessian/blob/main/paper/main.pdf), [</> Code](https://github.com/kisnikser/landscape-hessian/tree/main/code)
+[📝 Paper](https://github.com/kisnikser/landscape-hessian/blob/main/paper/main.pdf), [</> Code](https://github.com/kisnikser/landscape-hessian/tree/main/code), [🪧 Slides](https://github.com/kisnikser/landscape-hessian/blob/main/slides/main.pdf)
 
 </div>
 
