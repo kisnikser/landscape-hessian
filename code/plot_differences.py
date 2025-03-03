@@ -5,16 +5,16 @@ import json
 import argparse
 from omegaconf import OmegaConf
 
-myparams = {
-    'text.usetex': True,
-    'text.latex.preamble': r'\usepackage{amsmath}',
-    'font.family': 'Djvu Serif',
-    'font.size': 16,
-    'axes.grid': True,
-    'grid.alpha': 0.3,
-    'lines.linewidth': 2,
-}
-plt.rcParams.update(myparams)
+# myparams = {
+#     'text.usetex': True,
+#     'text.latex.preamble': r'\usepackage{amsmath}',
+#     'font.family': 'Djvu Serif',
+#     'font.size': 16,
+#     'axes.grid': True,
+#     'grid.alpha': 0.3,
+#     'lines.linewidth': 2,
+# }
+# plt.rcParams.update(myparams)
 
 
 def get_loss_abs_differences(loss_values):
@@ -55,15 +55,20 @@ def main(config):
 
         for res in results:
             
-            h = res['h']
+            h = res['h']            
             if h != int(config.hidden_size):
                 continue
             
             L = res['L']
-            loss_values = res['loss_values']
             
-            vals = np.array([get_loss_abs_differences(loss_values) for _ in range(config.num_samples)])
-            means = vals.mean(axis=0)
+            samples = res['samples']
+            means_list = []
+            for s in samples:
+                loss_values = s['loss_values']            
+                vals = np.array([get_loss_abs_differences(loss_values) for _ in range(config.num_samples)])
+                means = vals.mean(axis=0)
+                means_list.append(means)
+            means = np.mean(means_list, axis=0)
             ema = calculate_ema(means)
             plt.plot(ema, label=f'$h$ = {h}, $L$ = {L}')
             
@@ -87,10 +92,14 @@ def main(config):
             if L != int(config.num_layers):
                 continue
             
-            loss_values = res['loss_values']
-            
-            vals = np.array([get_loss_abs_differences(loss_values) for _ in range(config.num_samples)])
-            means = vals.mean(axis=0)
+            samples = res['samples']
+            means_list = []
+            for s in samples:
+                loss_values = s['loss_values']            
+                vals = np.array([get_loss_abs_differences(loss_values) for _ in range(config.num_samples)])
+                means = vals.mean(axis=0)
+                means_list.append(means)
+            means = np.mean(means_list, axis=0)
             ema = calculate_ema(means)
             plt.plot(ema, label=f'$h$ = {h}, $L$ = {L}')
             

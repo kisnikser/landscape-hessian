@@ -1,0 +1,3 @@
+results_path: /home/jovyan/nkiselev/studying/landscape-hessian/code/results/mnist.json
+plot_save_path: /home/jovyan/nkiselev/studying/landscape-hessian/code/figs_accuracy_vs_differences/mnist.pdf
+num_samples: 100

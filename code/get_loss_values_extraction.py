@@ -43,14 +43,6 @@ def get_loss_abs_differences(loss_values):
     loss_abs_differences = abs(np.diff(loss_mean_values))
     return loss_abs_differences
 
-# calculate the EMA (exponential moving average)
-def calculate_ema(data, window=10):
-    weights = np.exp(np.linspace(-1., 0., window))
-    weights /= weights.sum()
-    ema = np.convolve(data, weights, mode='full')[:len(data)]
-    ema[:window] = ema[window]
-    return ema
-
 name2dataset = {
     'MNIST': datasets.MNIST,
     'FashionMNIST': datasets.FashionMNIST,
