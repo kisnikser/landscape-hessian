@@ -1,0 +1,10 @@
+matplotlib==3.10.1
+numpy==2.2.4
+omegaconf==2.3.0
+pillow==11.1.0
+tokenizers==0.21.1
+torch==2.6.0
+torchaudio==2.6.0
+torchvision==0.21.0
+tqdm==4.67.1
+transformers==4.50.2

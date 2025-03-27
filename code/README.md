@@ -10,34 +10,27 @@ This repository contains the source code for the paper "Unraveling the Hessian: 
 ## Installation <a name="installation"></a>
 To use this project, you need to have Python and the required packages installed on your computer.
 
-Clone the repository:
+Clone the repo:
 ```bash
 git clone https://github.com/kisnikser/landscape-hessian.git
-```
-
-Navigate to the repository directory:
-```bash
 cd landscape-hessian/code
 ```
 
-Create a conda environment using the provided `environment.yml` file:
+Install dependencies:
 ```bash
-conda env create -f environment.yml
-```
-
-Activate the conda environment:
-```bash
+conda create -n landscape-hessian python=3.10
 conda activate landscape-hessian
+pip install -r requirements.txt
 ```
 
 ## Usage <a name="usage"></a>
 To run the project, you can execute the Python scripts directly. For example, to get loss values, you can run:
 ```bash
-python get_loss_values.py
+python get_loss_values.py --config_path=configs/configs_direct/mnist.yml
 ```
 Similarly, to plot differences, you can run:
 ```bash
-python plot_differences.py
+python plot_differences.py --config_path=configs/configs_plot/config_plot.yml
 ```
 Make sure to adjust the configuration files in the `configs` directory according to your needs.
 

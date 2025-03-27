@@ -28,7 +28,7 @@ class Net(nn.Module):
         for layer in self.layers:
             x = layer(x)
         return x
-    
+
 
 # Define loss function
 def criterion_params(params, x, y, criterion, model):
@@ -44,47 +44,52 @@ def get_loss_abs_differences(loss_values):
     loss_abs_differences = abs(np.diff(loss_mean_values))
     return loss_abs_differences
 
+
 # calculate the EMA (exponential moving average)
 def calculate_ema(data, window=10):
-    weights = np.exp(np.linspace(-1., 0., window))
+    weights = np.exp(np.linspace(-1.0, 0.0, window))
     weights /= weights.sum()
-    ema = np.convolve(data, weights, mode='full')[:len(data)]
+    ema = np.convolve(data, weights, mode="full")[: len(data)]
     ema[:window] = ema[window]
     return ema
 
 
 name2dataset = {
-    'MNIST': datasets.MNIST,
-    'FashionMNIST': datasets.FashionMNIST,
-    'CIFAR10': datasets.CIFAR10,
-    'CIFAR100': datasets.CIFAR100,
+    "MNIST": datasets.MNIST,
+    "FashionMNIST": datasets.FashionMNIST,
+    "CIFAR10": datasets.CIFAR10,
+    "CIFAR100": datasets.CIFAR100,
 }
 
 
 ###############################################################################
 
+
 def main(config):
     # Define a transform to normalize the data
-    transform = transforms.Compose([transforms.ToTensor(),
-                                    transforms.Normalize((0.5,), (0.5,))])
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
     # Download and load the dataset
-    train_dataset = name2dataset[config.dataset_name](f'~/.pytorch/{config.dataset_name}_data/', download=True, train=True, transform=transform)
+    train_dataset = name2dataset[config.dataset_name](
+        f"~/.pytorch/{config.dataset_name}_data/", download=True, train=True, transform=transform
+    )
     train_dataset = torch.utils.data.Subset(train_dataset, np.arange(config.train_size))
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=config.train_batch_size, shuffle=True)
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     results = []
 
-    for hidden_size in tqdm(config.hidden_size_list, desc='Hidden size loop'):
-        for num_layers in tqdm(config.num_layers_list, desc='Number of layers loop'):
+    for hidden_size in tqdm(config.hidden_size_list, desc="Hidden size loop"):
+        for num_layers in tqdm(config.num_layers_list, desc="Number of layers loop"):
 
             # Initialize the network, loss function, and optimizer
             model = Net(config.input_size, hidden_size, config.output_size, num_layers).to(device)
             criterion = nn.CrossEntropyLoss()
             optimizer = optim.Adam(model.parameters(), lr=config.learning_rate)
             # Train the network
-            for epoch in tqdm(range(config.num_epochs), desc='Train loop', leave=False):  # loop over the dataset multiple times
+            for epoch in tqdm(
+                range(config.num_epochs), desc="Train loop", leave=False
+            ):  # loop over the dataset multiple times
                 for x, y in train_dataloader:
                     x, y = x.to(device), y.to(device)
                     # get the inputs
@@ -105,25 +110,25 @@ def main(config):
             loss_values = []
 
             with torch.no_grad():
-                #for x, y in train_dataloader:
-                for x, y in tqdm(train_dataset, desc='Loss values loop', leave=False):
+                # for x, y in train_dataloader:
+                for x, y in tqdm(train_dataset, desc="Loss values loop", leave=False):
                     x, y = x.to(device), torch.tensor([y]).to(device)
                     x = x.view(-1, model.input_size)
                     loss = criterion_params(theta_opt, x, y, criterion, model).item()
                     loss_values.append(loss)
 
-            results.append({'h': model.hidden_size, 'L': model.num_layers, 'loss_values': loss_values})
-            
-    with open(config.save_path, 'w') as f:
+            results.append({"h": model.hidden_size, "L": model.num_layers, "loss_values": loss_values})
+
+    with open(config.save_path, "w") as f:
         json.dump(results, f, indent=4)
 
 
-###############################################################################        
+###############################################################################
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Getting loss values for FC network")
-    parser.add_argument("--config_path", type=str, default='config.yml', help="Path to the config file")
+    parser.add_argument("--config_path", type=str, default="configs/configs_direct/mnist.yml")
     args = parser.parse_args()
     config = OmegaConf.load(args.config_path)
     main(config)
