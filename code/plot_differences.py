@@ -5,16 +5,16 @@ import json
 import argparse
 from omegaconf import OmegaConf
 
-# myparams = {
-#     'text.usetex': True,
-#     'text.latex.preamble': r'\usepackage{amsmath}',
-#     'font.family': 'Djvu Serif',
-#     'font.size': 16,
-#     'axes.grid': True,
-#     'grid.alpha': 0.3,
-#     'lines.linewidth': 2,
-# }
-# plt.rcParams.update(myparams)
+myparams = {
+    # 'text.usetex': True,
+    # 'text.latex.preamble': r'\usepackage{amsmath}',
+    # 'font.family': 'Djvu Serif',
+    "font.size": 14,
+    "axes.grid": True,
+    "grid.alpha": 0.3,
+    "lines.linewidth": 2,
+}
+plt.rcParams.update(myparams)
 
 
 def get_loss_abs_differences(loss_values):
@@ -38,83 +38,87 @@ def calculate_ema(data, smoothing_factor=0.99):
     """
     ema = [data[0]]
     for i in range(1, len(data)):
-        ema.append(smoothing_factor * ema[i-1] + (1 - smoothing_factor) * data[i])
+        ema.append(smoothing_factor * ema[i - 1] + (1 - smoothing_factor) * data[i])
     return ema
 
 
 def main(config):
-    
+
     for i in range(len(config.dataset_names)):
 
-        with open(f'results/{config.output_names[i]}.json', 'r') as f:
+        with open(f"results/{config.output_names[i]}.json", "r") as f:
             results = json.load(f)
-            
+
         # NUMBER OF LAYERS
 
         plt.figure()
 
         for res in results:
-            
-            h = res['h']            
+
+            h = res["h"]
             if h != int(config.hidden_size):
                 continue
-            
-            L = res['L']
-            
-            samples = res['samples']
+
+            L = res["L"]
+
+            samples = res["samples"]
             means_list = []
             for s in samples:
-                loss_values = s['loss_values']            
+                loss_values = s["loss_values"]
                 vals = np.array([get_loss_abs_differences(loss_values) for _ in range(config.num_samples)])
                 means = vals.mean(axis=0)
                 means_list.append(means)
             means = np.mean(means_list, axis=0)
             ema = calculate_ema(means)
-            plt.plot(ema, label=f'$h$ = {h}, $L$ = {L}')
-            
+            plt.plot(ema, label=f"$h$ = {h}, $L$ = {L}")
+
         plt.legend()
         plt.title(config.dataset_names[i])
-        plt.xlabel('Sample size, $k$')
-        plt.ylabel(r"$\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}) \right|$")
-        plt.yscale('log')
+        plt.xlabel("Sample size, $k$")
+        plt.ylabel(
+            r"$\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}) \right|$"
+        )
+        plt.yscale("log")
         plt.tight_layout()
-        plt.savefig(f'figs/{config.output_names[i]}_num_layers.pdf', bbox_inches='tight')
-        
+        plt.savefig(f"figs/{config.output_names[i]}_num_layers.pdf", bbox_inches="tight")
+
         # HIDDEN SIZE
-        
+
         plt.figure()
 
         for res in results:
-            
-            h = res['h']
-            L = res['L']
-            
+
+            h = res["h"]
+            L = res["L"]
+
             if L != int(config.num_layers):
                 continue
-            
-            samples = res['samples']
+
+            samples = res["samples"]
             means_list = []
             for s in samples:
-                loss_values = s['loss_values']            
+                loss_values = s["loss_values"]
                 vals = np.array([get_loss_abs_differences(loss_values) for _ in range(config.num_samples)])
                 means = vals.mean(axis=0)
                 means_list.append(means)
             means = np.mean(means_list, axis=0)
             ema = calculate_ema(means)
-            plt.plot(ema, label=f'$h$ = {h}, $L$ = {L}')
-            
+            plt.plot(ema, label=f"$h$ = {h}, $L$ = {L}")
+
         plt.legend()
         plt.title(config.dataset_names[i])
-        plt.xlabel('Sample size, $k$')
-        plt.ylabel(r"$\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}) \right|$")
-        plt.yscale('log')
+        plt.xlabel("Sample size, $k$")
+        plt.ylabel(
+            r"$\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}) \right|$"
+        )
+        plt.yscale("log")
         plt.tight_layout()
-        plt.savefig(f'figs/{config.output_names[i]}_hidden_size.pdf', bbox_inches='tight')
-    
-    
-if __name__ == '__main__':
+        plt.savefig(f"figs/{config.output_names[i]}_hidden_size.pdf", bbox_inches="tight")
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plotting graphs for losses differences")
-    parser.add_argument("--config_path", type=str, default='config_plot.yml', help="Path to the config file")
+    parser.add_argument("--config_path", type=str, default="config_plot.yml", help="Path to the config file")
     args = parser.parse_args()
     config = OmegaConf.load(args.config_path)
     main(config)

@@ -1,5 +1,0 @@
-dataset_names: ['MNIST']
-output_names: ['mnist']
-hidden_size: 16
-num_layers: 5
-num_samples: 100

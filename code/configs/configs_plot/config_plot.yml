@@ -1,5 +1,5 @@
-dataset_names: ['MNIST', 'FashionMNIST', 'CIFAR10', 'CIFAR100']
-output_names: ['mnist', 'fashion_mnist', 'cifar10', 'cifar100']
+dataset_names: ['MNIST', 'CIFAR10']
+output_names: ['mnist', 'cifar10']
 hidden_size: 16
-num_layers: 5
+num_layers: 3
 num_samples: 100

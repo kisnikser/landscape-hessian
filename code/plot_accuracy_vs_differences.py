@@ -8,16 +8,16 @@ from omegaconf import OmegaConf
 from collections import defaultdict
 
 
-# myparams = {
-#     'text.usetex': True,
-#     'text.latex.preamble': r'\usepackage{amsmath}',
-#     'font.family': 'Djvu Serif',
-#     'font.size': 16,
-#     'axes.grid': True,
-#     'grid.alpha': 0.3,
-#     'lines.linewidth': 2,
-# }
-# plt.rcParams.update(myparams)
+myparams = {
+    # 'text.usetex': True,
+    # 'text.latex.preamble': r'\usepackage{amsmath}',
+    # 'font.family': 'Djvu Serif',
+    "font.size": 14,
+    "axes.grid": True,
+    "grid.alpha": 0.3,
+    "lines.linewidth": 2,
+}
+plt.rcParams.update(myparams)
 
 
 def calculate_mean_std(accuracy_samples):
@@ -57,7 +57,7 @@ def calculate_ema(data, smoothing_factor=0.99):
     """
     ema = [data[0]]
     for i in range(1, len(data)):
-        ema.append(smoothing_factor * ema[i-1] + (1 - smoothing_factor) * data[i])
+        ema.append(smoothing_factor * ema[i - 1] + (1 - smoothing_factor) * data[i])
     return ema
 
 
@@ -71,34 +71,34 @@ def plot_grouped_results(results, group_by, config):
         config (omegaconf.DictConfig): Configuration object.
     """
     grouped_results = defaultdict(list)
-    
+
     # Group results by the specified key
     for res in results:
         key = res[group_by]
         grouped_results[key].append(res)
-    
+
     # Determine the non-grouped-by key
-    non_group_by = 'L' if group_by == 'h' else 'h'
-    
+    non_group_by = "L" if group_by == "h" else "h"
+
     # Plot each group
     for key, group in grouped_results.items():
         plt.figure()
-        
+
         # Sort the group by the non-grouped-by value
         group_sorted = sorted(group, key=lambda x: x[non_group_by])
-        
+
         diff_min = -float(np.inf)
         diff_max = float(np.inf)
-        
+
         for res in group_sorted:
-            h = res['h']
-            L = res['L']
-            samples = res['samples']
-            accuracy_samples = [s['accuracy'] for s in samples]
-            
+            h = res["h"]
+            L = res["L"]
+            samples = res["samples"]
+            accuracy_samples = [s["accuracy"] for s in samples]
+
             means_list = []
             for s in samples:
-                loss_values = s['loss_values']            
+                loss_values = s["loss_values"]
                 vals = np.array([get_loss_abs_differences(loss_values) for _ in range(config.num_samples)])
                 means = vals.mean(axis=0)
                 means_list.append(means)
@@ -109,50 +109,57 @@ def plot_grouped_results(results, group_by, config):
             mean_accuracy, std_accuracy = calculate_mean_std(accuracy_samples)
 
             # Calculate training sample size
-            val_batch_size = res['val_batch_size']
+            val_batch_size = res["val_batch_size"]
             sample_sizes = [val_batch_size * (idx + 1) for idx in range(len(mean_accuracy))]
 
-            # Truncate data where sample_sizes <= 10,000
-            truncate_idx = np.searchsorted(sample_sizes, 10000, side='right')
+            # Truncate data where sample_sizes <= 50,000
+            truncate_idx = np.searchsorted(sample_sizes, 50000, side="right")
             sample_sizes_trunc = sample_sizes[:truncate_idx]
             mean_accuracy_trunc = mean_accuracy[:truncate_idx]
             std_accuracy_trunc = std_accuracy[:truncate_idx]
-            
+
             abs_differences = [ema[idx] for idx in sample_sizes_trunc]
             diff_min = max(diff_min, min(abs_differences))
             diff_max = min(diff_max, max(abs_differences))
 
             # Plot mean accuracy with error bars for std
-            plt.plot(abs_differences, mean_accuracy_trunc, label=f'$h$ = {h}, $L$ = {L}')
-            plt.fill_between(abs_differences, mean_accuracy_trunc - std_accuracy_trunc, mean_accuracy_trunc + std_accuracy_trunc, alpha=0.3)
+            plt.plot(abs_differences, mean_accuracy_trunc, label=f"$h$ = {h}, $L$ = {L}")
+            plt.fill_between(
+                abs_differences,
+                mean_accuracy_trunc - std_accuracy_trunc,
+                mean_accuracy_trunc + std_accuracy_trunc,
+                alpha=0.3,
+            )
 
         plt.legend()
-        plt.title(f'Accuracy vs Abs Differences ({group_by} = {key})')
-        plt.xlabel(r"$\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}) \right|$")
-        plt.ylabel('Accuracy')
+        plt.title(f"Accuracy vs Abs Differences ({group_by} = {key})")
+        plt.xlabel(
+            r"$\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}) \right|$"
+        )
+        plt.ylabel("Accuracy")
         plt.grid(True, alpha=0.3)
         plt.xlim(diff_min, diff_max)
-        plt.xscale('log')
+        plt.xscale("log")
         plt.tight_layout()
         save_path = f"{os.path.splitext(config.plot_save_path)[0]}_{group_by}_{key}.pdf"
-        plt.savefig(save_path, bbox_inches='tight')
+        plt.savefig(save_path, bbox_inches="tight")
         plt.show()
 
 
 def main(config):
-    with open(config.results_path, 'r') as f:
+    with open(config.results_path, "r") as f:
         results = json.load(f)
 
     # Plot results grouped by 'h'
-    plot_grouped_results(results, 'h', config)
+    plot_grouped_results(results, "h", config)
 
     # Plot results grouped by 'L'
-    plot_grouped_results(results, 'L', config)
+    plot_grouped_results(results, "L", config)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plotting Accuracy vs Training Sample Size")
-    parser.add_argument("--config_path", type=str, default='config.yml', help="Path to the config file")
+    parser.add_argument("--config_path", type=str, default="config.yml", help="Path to the config file")
     args = parser.parse_args()
     config = OmegaConf.load(args.config_path)
     main(config)
