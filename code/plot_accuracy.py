@@ -8,10 +8,10 @@ from collections import defaultdict
 
 
 myparams = {
-    # "text.usetex": True,
-    # "text.latex.preamble": r"\usepackage{amsmath}",
-    # "font.family": "Djvu Serif",
-    "font.size": 14,
+    "text.usetex": True,
+    "text.latex.preamble": r"\usepackage{amsmath}",
+    "font.family": "Djvu Serif",
+    "font.size": 16,
     "axes.grid": True,
     "grid.alpha": 0.3,
     "lines.linewidth": 2,
@@ -90,13 +90,12 @@ def plot_grouped_results(results, group_by, config):
             )
 
         plt.legend()
-        plt.title(f"Accuracy vs Training Sample Size ({group_by} = {key})")
-        plt.xlabel("Sample Size")
-        plt.ylabel("Accuracy")
+        plt.title("MNIST")
+        plt.xlabel("Training Sample Size")
+        plt.ylabel("Accuracy on Validation")
         plt.tight_layout()
         save_path = f"{os.path.splitext(config.plot_save_path)[0]}_{group_by}_{key}.pdf"
         plt.savefig(save_path, bbox_inches="tight")
-        plt.show()
 
 
 def main(config):

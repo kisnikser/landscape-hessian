@@ -5,11 +5,12 @@ import json
 import argparse
 from omegaconf import OmegaConf
 
+
 myparams = {
-    # 'text.usetex': True,
-    # 'text.latex.preamble': r'\usepackage{amsmath}',
-    # 'font.family': 'Djvu Serif',
-    "font.size": 14,
+    "text.usetex": True,
+    "text.latex.preamble": r"\usepackage{amsmath}",
+    "font.family": "Djvu Serif",
+    "font.size": 16,
     "axes.grid": True,
     "grid.alpha": 0.3,
     "lines.linewidth": 2,
@@ -53,7 +54,9 @@ def main(config):
 
         plt.figure()
 
-        for res in results:
+        results_sorted = sorted(results, key=lambda x: x["L"])
+
+        for res in results_sorted:
 
             h = res["h"]
             if h != int(config.hidden_size):
@@ -86,7 +89,9 @@ def main(config):
 
         plt.figure()
 
-        for res in results:
+        results_sorted = sorted(results, key=lambda x: x["h"])
+
+        for res in results_sorted:
 
             h = res["h"]
             L = res["L"]

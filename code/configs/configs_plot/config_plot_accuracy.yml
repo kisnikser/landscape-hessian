@@ -1,2 +1,2 @@
-results_path: /home/jovyan/nkiselev/studying/landscape-hessian/code/results/mnist.json
-plot_save_path: /home/jovyan/nkiselev/studying/landscape-hessian/code/figs_accuracy/mnist.pdf
+results_path: /Users/kisnikser/Documents/GitHub/landscape-hessian/code/results/mnist.json
+plot_save_path: /Users/kisnikser/Documents/GitHub/landscape-hessian/code/figs_accuracy/mnist.pdf

@@ -9,10 +9,10 @@ from collections import defaultdict
 
 
 myparams = {
-    # 'text.usetex': True,
-    # 'text.latex.preamble': r'\usepackage{amsmath}',
-    # 'font.family': 'Djvu Serif',
-    "font.size": 14,
+    "text.usetex": True,
+    "text.latex.preamble": r"\usepackage{amsmath}",
+    "font.family": "Djvu Serif",
+    "font.size": 16,
     "axes.grid": True,
     "grid.alpha": 0.3,
     "lines.linewidth": 2,
@@ -132,18 +132,17 @@ def plot_grouped_results(results, group_by, config):
             )
 
         plt.legend()
-        plt.title(f"Accuracy vs Abs Differences ({group_by} = {key})")
+        plt.title("MNIST")
         plt.xlabel(
             r"$\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}) \right|$"
         )
-        plt.ylabel("Accuracy")
+        plt.ylabel("Accuracy on Validation")
         plt.grid(True, alpha=0.3)
         plt.xlim(diff_min, diff_max)
         plt.xscale("log")
         plt.tight_layout()
         save_path = f"{os.path.splitext(config.plot_save_path)[0]}_{group_by}_{key}.pdf"
         plt.savefig(save_path, bbox_inches="tight")
-        plt.show()
 
 
 def main(config):

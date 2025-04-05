@@ -1,3 +1,3 @@
-results_path: /home/jovyan/nkiselev/studying/landscape-hessian/code/results/cifar10.json
-plot_save_path: /home/jovyan/nkiselev/studying/landscape-hessian/code/figs_accuracy_vs_differences/cifar10.pdf
+results_path: /Users/kisnikser/Documents/GitHub/landscape-hessian/code/results/mnist.json
+plot_save_path: /Users/kisnikser/Documents/GitHub/landscape-hessian/code/figs_accuracy_vs_differences/mnist.pdf
 num_samples: 100
