@@ -2,7 +2,7 @@
 \input{preamble}
 \input{new_commands}
 % \addbibresource{references.bib}
-\graphicspath{{../paper/figs},{../paper/figs_extraction}}
+\graphicspath{{figs}}
 \usefonttheme[onlymath]{serif}
 
 \newcommand\freefootnote[1]{%
@@ -12,37 +12,37 @@
 }
 
 %%%
-\title{Изменение поверхности функции потерь в нейронных сетях при увеличении размера выборки}
+\title{Сходимость поверхности функции потерь как признак достаточного размера выборки}
 \subtitle{\textcolor{black!50}{Отчет о научно-исследовательской работе}}
 \author{
     Киселев Никита Сергеевич\\
     Научный руководитель: к.ф.-м.н. А.\,В.\,Грабовой
 }
 \date{}
-\institute[МФТИ (НИУ)]{
+\institute[МФТИ (НИУ)]{\small{
     Московский физико-технический институт\\
     (национальный исследовательский университет)\\
     Физтех-школа прикладной математики и информатики\\
     Кафедра интеллектуальных систем
-}
+}}
 %%%
 
 \begin{document}
 
 \maketitle
 
-\begin{frame}{Изменение поверхности функции потерь}
-    Исследуется ландшафт функции потерь в нейронных сетях.
+\begin{frame}{Изменение поверхности функции потерь и достаточный размер выборки}
     \begin{block}{Проблема}
+        Исследуется ландшафт функции потерь в нейронных сетях.
         Рассматриваемая поверхность нетривиально зависит от выбранной архитектуры, функции потерь и обучающей выборки. 
     \end{block}
     \begin{block}{Цель}
-        Оценить изменение поверхности функции потерь при изменении обучающего набора данных.
+        Оценить изменение поверхности функции потерь при добавлении обучающих данных. Связать это изменение с качеством модели на отложенной выборке.
     \end{block}
-    \begin{block}{Решение}
+    \begin{block}{Предлагается}
         \begin{enumerate}
-            \item Рассмотреть изменение функции потерь в окрестности минимума при добавлении одного нового объекта;
-            \item Использовать аппроксимацию второго порядка в окрестности экстремума.
+            \item Рассмотреть изменение функции потерь \textbf{в окрестности локального минимума}, используя аппроксимацию второго порядка;
+            \item Проанализировать связь качества модели на отложенной выборке с изменением поверхности функции ошибки на обучающем наборе данных.
         \end{enumerate}
     \end{block}
 \end{frame}
@@ -50,7 +50,7 @@
 \begin{frame}{Обзор полученных результатов}
     \begin{figure}[ht]
         \centering
-        \includegraphics[width=0.65\linewidth]{../paper/losses_difference.pdf}
+        \includegraphics[width=0.65\linewidth]{losses_difference.pdf}
         \caption{\textbf{Обзор результатов исследования.} Часть (a) показывает ландшафт функции потерь, который является поверхностью в пространстве параметров. Часть (b) показывает разность значений функции ошибки. Она возникает, когда в выборку добавляется один новый объект. Здесь мы демонстрируем поведение для двумерного пространства параметров. Рядом с точкой минимума $\boldsymbol{\theta}^*$ среднее значение функции ошибки на $k+1$ объектах $\mathcal{L}_{k+1}(\boldsymbol{\theta})$ стремится к тому же, но на $k$ объектах $\mathcal{L}_{k}(\boldsymbol{\theta})$.}
     \end{figure}
 \end{frame}
@@ -123,27 +123,6 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{Аппроксимация Гессиана полносвязной сети на одном объекте}
-    \vspace{-0.5em}
-    \[ \fbox{$\mathbf{H}(\boldsymbol{\theta}) \stackrel{2}{\approx} \mathbf{F}\T \mathbf{A} \mathbf{F}$} \]
-    \vspace{-2em}
-    \begin{itemize}
-        \item $\mathbf{D}^{(p)} = \mathrm{diag}([\mathbf{z}^{(p)} \geqslant \mathbf{0}])$
-        \item $\mathbf{G}^{(p)} = \dfrac{\partial \mathbf{z}}{\partial \mathbf{z}^{(p)}} = \mathbf{W}^{(L)} \mathbf{D}^{(L-1)} \mathbf{W}^{(L-1)} \mathbf{D}^{(L-2)} \cdot \ldots \cdot \mathbf{D}^{(p)}$
-        \item 
-        \[ \mathbf{F}\T = \begin{pmatrix}
-            (\mathbf{G}^{(1)})\T \otimes \mathbf{x}^{(1)} \\
-            (\mathbf{G}^{(1)})\T \\ 
-            \vdots \\
-            (\mathbf{G}^{(L)})\T \otimes \mathbf{x}^{(L)} \\
-            (\mathbf{G}^{(L)})\T \\ 
-        \end{pmatrix} \]
-        \item $\mathbf{A} = \nabla^2_\mathbf{z} \ell(\mathbf{z}, \mathbf{y}) = \mathrm{diag}(\mathbf{p}) - \mathbf{p} \mathbf{p}\T$
-    \end{itemize}
-    \vspace{1em}
-    \freefootnote{$^2$Wu, Y. et al. (2020). Dissecting hessian: Understanding common structure of hessian in neural networks.}
-\end{frame}
-
 \begin{frame}{Ограниченность и пропорциональность нормы Гессиана}
     \fontsize{9pt}{10pt}\selectfont
     \vspace{1em}
@@ -179,62 +158,57 @@
     \end{block}
 \end{frame}
 
-\section{Вычислительный эксперимент}
-
-\begin{frame}{Постановка эксперимента}
+\begin{frame}{Вычислительный эксперимент}
     \begin{itemize}
-        \item \textbf{Задача:} классификация изображений:
-        \begin{enumerate}
-            \item Прямая, то есть пиксели есть признаки,
-            \item С предварительной векторизацией при помощи предобученной модели ViT;
-        \end{enumerate}
-        \item \textbf{Выборка:} MNIST, FashionMNIST, CIFAR10, CIFAR100;
+        \item \textbf{Задача:} классификация изображений;
+        \item \textbf{Выборка:} MNIST, CIFAR10;
         \item \textbf{Архитектура:} полносвязная $L$-слойная сеть со скрытым размером $h$ на каждом слое и ReLU после каждого из них;
-        \item \textbf{Варьирование архитектуры:}
-        \begin{enumerate}
-            \item Фиксируем число слоев $L$ и варьируем размер скрытого слоя $h$,
-            \item Наоборот, фиксируем размер скрытого слоя $h$ и варьируем число слоев $L$;
-        \end{enumerate}
+        \item \textbf{Варьирование архитектуры:} фиксируем число слоев $L$ и варьируем размер скрытого слоя $h$;
         \item \textbf{Постановка эксперимента:}
         \begin{enumerate}
-            \item Обучаем модель на полном наборе данных $\to$ получаем $\hat{\boldsymbol{\theta}}$,
-            \item Подсчитываем $\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}) \right|$ для всех $k = 1, \ldots, m$,
-            \item Повторяем пункт 2 несколько раз, используя разный порядок добавления.
+            \item Проводим $N=10$ независимых обучений модели на полном наборе данных $\to$ получаем набор точек $\hat{\boldsymbol{\theta}}_1, \ldots, \hat{\boldsymbol{\theta}}_N$;
+            \item По мере обучения подсчитываем Accuracy на отложенной выборке;
+            \item Подсчитываем $\left| \mathcal{L}_{k+1}(\hat{\boldsymbol{\theta}}_{n}) - \mathcal{L}_k(\hat{\boldsymbol{\theta}}_{n}) \right|$ для всех $k = 1, \ldots, m$ и $n = 1, \ldots, N$;
+            \item Повторяем 3 пункт $B=100$ раз, используя разный порядок добавления, усредняем результаты;
+            \item Усредняем результаты по $N=10$ обучениям.
         \end{enumerate}
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Прямая классификация изображений}
+\begin{frame}{Сходимость поверхности в зависимости от размера выборки}
     \begin{figure}[ht]
         \centering
-        \includegraphics[width=0.5\linewidth]{../paper/figs/mnist_hidden_size.pdf}\hfill
-        \includegraphics[width=0.5\linewidth]{../paper/figs/mnist_num_layers.pdf}
-        \caption{Зависимость абсолютного значения разности значений функции ошибки от доступного размера выборки, на задаче прямой классификации изображений. Графики слева демонстрируют уменьшение значений при увеличении размера скрытого слоя. Графики справа демонстрируют увеличение значений при увеличении числа слоев.}
+        \includegraphics[width=0.5\linewidth]{mnist_hidden_size.pdf}\hfill
+        \includegraphics[width=0.5\linewidth]{cifar10_hidden_size.pdf}
+        \caption{Зависимость абсолютного значения разности значений функции ошибки от доступного размера выборки. Графики, полученные на наборах данных MNIST и CIFAR10, демонстрируют сходимость поверхности функции потерь для различных наборов гиперпараметров модели.}
     \end{figure}
 \end{frame}
 
-\begin{frame}{Предварительная векторизация изображений}
+\begin{frame}{Связь между качеством модели и сходимостью функции потерь}
     \begin{figure}[ht]
         \centering
-        \includegraphics[width=0.5\linewidth]{../paper/figs_extraction/mnist_hidden_size.pdf}\hfill
-        \includegraphics[width=0.5\linewidth]{../paper/figs_extraction/mnist_num_layers.pdf}
-        \caption{Зависимость абсолютного значения разности значений функции ошибки от доступного размера выборки, на задаче с предварительной векторизацией изображений. Графики слева демонстрируют уменьшение значений при увеличении размера скрытого слоя. Графики справа демонстрируют увеличение значений при увеличении числа слоев.}
+        \includegraphics[width=0.5\linewidth]{mnist_L_3.pdf}\hfill
+        \includegraphics[width=0.5\linewidth]{cifar10_L_3.pdf}
+        \caption{Зависимость \underline{Accuracy на отложенной выборке} от значения абсолютной разности \underline{функции потерь на обучающей выборке}. Полученные на наборах данных MNIST и CIFAR10 графики показывают, что чем меньше становится изменение поверхности функции потерь, тем выше качество модели.}
     \end{figure}
 \end{frame}
 
-\begin{frame}{Заключение}
+\begin{frame}{Выносится на защиту}
     \begin{enumerate}
         \item Доказаны теоретические результаты о сходимости поверхности функции потерь в полносвязной нейронной сети при увеличении размера выборки;
         \item Вычислительный эксперимент демонстрирует справедливость полученных результатов на практике;
-        \item Дальнейшее исследование лежит в направлении 1) рассмотрения других архитектур\footnote{Ожидается выступление студента 4-го курса Владислава Мешкова на конференции ИСП РАН по совместному исследованию для сверточных архитектур}, 2) определения достаточного размера выборки.
+        \item В результате экспериментов также получено, что сходимость поверхности функции потерь связана с качеством модели на отложенной выборке;
+        \item Дальнейшее исследование лежит в направлении формулировки критерия достаточного размера выборки, используя сходимость функции ошибки.
     \end{enumerate}
-    \begin{block}{Публикации}
-        \begin{enumerate}
-            \item N.~Kiselev, A.~Grabovoy. Unraveling the Hessian: A Key to Smooth Convergence in Loss Function Landscapes // arXiv preprint arXiv:2409.11995. – 2024.\\
-            Отобрана для публикации в рамках конференции AI Journey 2024. Будет опубликована в журнале Doklady Mathematics (\textbf{Q2}).
-        \end{enumerate}
-    \end{block}
-    \vspace{0.5em}
+\end{frame}
+
+\begin{frame}{Список работ автора по теме исследования}
+    \begin{enumerate}
+        \item \textbf{N. Kiselev}, A. Grabovoy (2025). Sample size determination: likelihood bootstrapping. Computational Mathematics and Mathematical Physics, 65(2), 416-423.
+        \item \textbf{N. Kiselev}, A. Grabovoy (2025). Sample size determination: posterior distributions proximity. Computational Management Science, 22(1), 1.
+        \item \textbf{N. Kiselev}, A. Grabovoy (2024). Unraveling the hessian: A key to smooth convergence in loss function landscapes. Doklady Mathematics, 110(1), 49–61.
+        \item V. Meshkov, \textbf{N. Kiselev}, A. Grabovoy (2024). ConvNets Landscape Convergence: Hessian-Based Analysis of Matricized Networks. In 2024 Ivannikov Ispras Open Conference (ISPRAS) (pp. 1-10). IEEE.
+    \end{enumerate}
 \end{frame}
 
 \end{document}
